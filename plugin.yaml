@@ -1,0 +1,37 @@
+name: codemode
+version: "0.2.0"
+manifest_version: 2
+description: >-
+  Code-as-Orchestration for Hermes: the model writes one JavaScript snippet
+  instead of a chain of JSON tool calls. MCP tools (plus an allowlist of
+  built-ins) become tools.<name>() inside a disposable QuickJS sandbox
+  (separate process, memory cap, hard-killed on timeout, no fs/network);
+  schemas are discovered on demand via BM25 searchTools(). Only the return
+  value re-enters the context.
+author: Junbo Hu
+license: MIT
+homepage: https://github.com/junbo-hh/hermes-codemode
+tags: [tools, mcp, sandbox, orchestration, token-saving]
+kind: standalone
+requires_hermes: ">=0.21.5"
+provides_tools:
+  - codemode
+python_dependencies:
+  - "quickjs>=1.19.2,<2"
+config_schema:
+  extra_tools:
+    type: list
+    default: [web_search, web_extract]
+    description: Non-MCP Hermes tools exposed inside the sandbox (MCP tools are always exposed).
+  timeout_s:
+    type: int
+    default: 30
+    description: Default script timeout in seconds (hard max 120).
+  memory_mb:
+    type: int
+    default: 256
+    description: QuickJS heap limit per execution.
+  max_tool_calls:
+    type: int
+    default: 200
+    description: Tool-call budget per script.
