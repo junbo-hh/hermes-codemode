@@ -46,8 +46,14 @@ hermes plugins install junbo-hh/hermes-codemode --enable
 The only dependency is [`quickjs`](https://pypi.org/project/quickjs/)
 (`>=1.19.2,<2`); Hermes asks for consent and installs it.
 
-Then just ask for something that needs several tool calls. The model sees one
-new tool, `codemode`.
+**Restart Hermes after installing** (quit and reopen the Desktop app, or
+restart your gateway). A running Hermes process keeps its old dependency
+environment, so it will not see `codemode` until it restarts.
+
+Then ask for something that needs several tool calls. The model sees one new
+tool, `codemode`. With Tool Search on (the default), it is listed in the
+`tool_search` catalog with its one-line description. Set
+`tools.tool_search.enabled: off` if you want it in the tool list directly.
 
 Optional: force all MCP usage through codemode by hiding the raw MCP tools:
 
@@ -101,8 +107,8 @@ JS is synchronous: tool calls block, no `await` needed.
 
 ```bash
 pip install quickjs pytest
-pytest          # 11 tests: chaining, BM25, errors, timeout kill, memory cap,
-                # no host access, fresh context, budgets, logs
+pytest          # 12 tests: chaining, BM25, errors, did-you-mean hints, timeout
+                # kill, memory cap, no host access, fresh context, budgets, logs
 ```
 
 ## Files
@@ -113,6 +119,7 @@ pytest          # 11 tests: chaining, BM25, errors, timeout kill, memory cap,
 | `__init__.py` | `register(ctx)`: builds the tool catalog from the registry, dispatches through `ctx.dispatch_tool` |
 | `codemode.py` | Harness-agnostic runtime: BM25 catalog, sandbox process protocol, QuickJS worker |
 | `tests/` | pytest suite (no Hermes needed) |
+| `demo/bench.py` | A/B run of one task on a real Hermes agent, with and without codemode |
 
 ## License
 

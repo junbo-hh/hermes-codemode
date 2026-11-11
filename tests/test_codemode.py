@@ -63,6 +63,11 @@ def test_unknown_tool_suggests_close_match():
     assert "did you mean: mcp__tracker__list_issues" in out["result"]["error"]
 
 
+def test_misspelled_tool_call_gets_hint():
+    out = make_runner().run("return tools.mcp__tracker__list_isues({});")
+    assert not out["ok"] and "did you mean: mcp__tracker__list_issues" in out["error"]
+
+
 def test_timeout_kills_runaway_script():
     r = make_runner()
     t = time.monotonic()

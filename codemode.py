@@ -277,6 +277,13 @@ var console = { log: function () {
   __log(Array.prototype.map.call(arguments, function (a) {
     return typeof a === 'string' ? a : JSON.stringify(a); }).join(' ')); } };
 console.info = console.warn = console.error = console.log;
+function __sealTools() {
+  var real = tools;
+  tools = new Proxy(real, { get: function (t, k) {
+    if (typeof k !== 'string' || k in t) { return t[k]; }
+    throw new Error('unknown tool: tools.' + k + __hint(k));
+  }});
+}
 """
 
 
@@ -313,10 +320,12 @@ def _worker() -> None:
     ctx.add_callable("__search_tools", lambda q, k=5: json.dumps(catalog.search(q, int(k))))
     ctx.add_callable("__describe_tool", lambda n: json.dumps(catalog.describe(n)))
     ctx.add_callable("__log", log)
+    ctx.add_callable("__hint", lambda n: catalog.hint(str(n)))
     try:
         ctx.eval(_PRELUDE)
         for js in catalog.by_js:
             ctx.eval(f"__registerTool({json.dumps(js)});")
+        ctx.eval("__sealTools();")
         wrapped = ("(function(){ var __r = (function(){\n%s\n})();"
                    " return __r === undefined ? 'null' : JSON.stringify(__r); })()") % init["code"]
         raw = ctx.eval(wrapped)
