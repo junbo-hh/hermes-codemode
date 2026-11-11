@@ -322,10 +322,9 @@ def _worker() -> None:
     ctx.add_callable("__log", log)
     ctx.add_callable("__hint", lambda n: catalog.hint(str(n)))
     try:
-        ctx.eval(_PRELUDE)
-        for js in catalog.by_js:
-            ctx.eval(f"__registerTool({json.dumps(js)});")
-        ctx.eval("__sealTools();")
+        setup = _PRELUDE + "".join(f"__registerTool({json.dumps(js)});\n"
+                                   for js in catalog.by_js) + "__sealTools();\n"
+        ctx.eval(setup)
         wrapped = ("(function(){ var __r = (function(){\n%s\n})();"
                    " return __r === undefined ? 'null' : JSON.stringify(__r); })()") % init["code"]
         raw = ctx.eval(wrapped)

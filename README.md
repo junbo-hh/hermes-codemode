@@ -119,7 +119,6 @@ pytest          # 12 tests: chaining, BM25, errors, did-you-mean hints, timeout
 | `__init__.py` | `register(ctx)`: builds the tool catalog from the registry, dispatches through `ctx.dispatch_tool` |
 | `codemode.py` | Harness-agnostic runtime: BM25 catalog, sandbox process protocol, QuickJS worker |
 | `tests/` | pytest suite (no Hermes needed) |
-| `demo/bench.py` | A/B run of one task on a real Hermes agent, with and without codemode |
 
 ## License
 
